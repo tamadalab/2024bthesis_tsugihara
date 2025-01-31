@@ -9,13 +9,14 @@
 \usepackage{csg-thesis}
 \usepackage[dvipdfmx]{graphicx}
 \usepackage{url}
+\usepackage{subcaption}
 
 \begin{document}
 
 % 題目
 % 適当に改行（\\）で区切って見やすくする
 \title{%
-  プログラミング習慣化のためのバーチャルペットを育成するVSCode拡張機能の開発
+  Code Aile\\バーチャルペットを用いた\\プログラミング習慣化の試み
 }
 
 % 学位(学部と大学院で変更)
@@ -60,7 +61,8 @@
 それを今日デファクト・スタンダードな統合開発環境/IDEであるVSCodeに実装した拡張機能、Code Aileを提案する。
 用意された実績を解除し、ペットを育てるという要素を取り入れることで、開発の達成感を高め、ユーザーのモチベーション維持に繋げる。
 試験的に本拡張機能を使用したユーザーにアンケートを行い、その結果から本拡張機能の有効性を検証する。
-実験の結果、・・・
+実験の結果、バーチャルペットを育てることはプログラミング習慣化の手助けになることが分かった。
+しかし、Code Aileという拡張機能のシステムやUIには改善が必要であるという結論になった。
 
 \end{abstract}
 
@@ -95,17 +97,17 @@
 %
 \chapter{はじめに}
 
- プログラムに限らず、学習には継続的な努力が必要であり、そのためには継続する動機が必要である。
+ プログラミングに限らず、学習には継続的な努力が必要であり、そのためには継続する動機が必要である。
 そのためにこれまで、ゲーミフィケーション\cite{2022caeai_zhan}やエディテインメント\cite{2020ipsj_hanayama}に基づく手法が提案されてきた。
 これらは、ゲームや娯楽を通じて学習を促進する手法であり、プログラミング教育においても、
 プログラミング言語の学習をゲーム感覚で行うことで、学習意欲を高める取り組みが行われている\cite{2014hicss_hamari}。
 
- そこで本稿では,ゲーミフィケーションを取り入れたVScode 拡張機能を開発する。
-VSCode は現在最も普及しているエディタであり、ユーザが非常に多い。
+ そこで本稿では、ゲーミフィケーションを取り入れたVSCode 拡張機能を開発する。
+VSCode は現在最も普及しているエディタであり、ユーザーが非常に多い。
 それにより、初学者が開発に対するモチベーションを維持できるような環境構築を目指す。
 具体的には、キャラクターを成長させることができる育成ゲームの要素を取り入れ、
-ユーザーの進捗を視覚的にフィードバックする．サイドバーを部屋に見立てて育成するキャラクターを配置する。
-そしてユーザーは、開発を行うことで実績を解除し、経験値を得てキャラクターを成長させる．この実績システムでは、ソース
+ユーザーの進捗を視覚的にフィードバックするため、サイドバーを部屋に見立てて育成するキャラクターを配置する。
+そしてユーザーは、開発を行うことで実績を解除し、経験値を得てキャラクターを成長させる。この実績システムでは、ソース
 ファイルの新規作成数や編集行数、デバッグ回数などを追跡し、これらの操作をもとに実績を解除できる。
 このシステムによってユーザーにフィードバックと達成感を与え、さらなる開発への動機付けになると考えられる。
 また、達成した実績数に応じて、部屋に飾るアイテムを取得することができる。これによりユーザーは、
@@ -152,8 +154,50 @@ Code Aileは、VSCodeのサイドバーに表示される部屋を舞台に、�
 また、Aileの成長や部屋のカスタマイズ機能は、第\ref{sec:proposal}章で述べた実績システムと連動しており、
 そのためにVSCodeを通じて、ファイルの新規作成、保存、編集行数、デバッグの実行などユーザーの操作を追跡する機能も実装している。
 
+\section{Aileの成長と部屋のカスタマイズ}
+ Aileの成長段階は7段階あり、ユーザーランクと連動して成長する。
+実行画面にあるevolve aile（EA）ボタンをクリックすることで、Aileが次の成長段階に進化する。
+また、解除した実績数が5つ増えるごとに、部屋のカスタマイズアイテムを取得でき、部屋の背景を変更したり、家具を配置することができる。
+図~\ref{fig:initialCodeAile}が、初期段階の実行画面であり、図~\ref{fig:grownCodeAile}は、ある程度成長した段階の実行画面である。
+
+\begin{figure*}[t]
+	\begin{minipage}[b]{0.48\linewidth}
+		\centering
+		\includegraphics[width=4cm]{images/initialCodeAile}
+		\subcaption{CodeAileの実行画面（初期段階）}
+		\label{fig:initialCodeAile}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[b]{0.48\linewidth}
+		\centering
+		\includegraphics[width=4cm]{images/grownCodeAile}
+		\subcaption{CodeAileの実行画面（成長後）}
+		\label{fig:grownCodeAile}
+	\end{minipage}
+	\hfill
+	\caption{CodeAileの実行画面}
+	\label{fig:codeAile}
+\end{figure*}
+
+\section{ユーザーステータス}
+ ユーザーステータスはユーザー名、経験値、ランク、解除した実績リストの4要素を持つ。
+ユーザー名はホームディレクトリ名が自動的に設定され、実績を解除することで経験値が増加し、次のランクに上がるための閾値に達するとランクが上昇する。
+実行画面にあるshow status（SS）ボタンをクリックすることで、図\ref{fig:userStatus}の様に、現在のステータスと実績の達成状況を確認できる。
+
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=10cm]{images/userStatus}
+  \caption{ユーザーステータスの表示}
+  \label{fig:userStatus}
+\end{figure}
+
+\section{実績システム}
+ ログファイルから得た統計情報を取得し、事前に設定している実績の条件を満たしていると、実績が解除される。
+条件は10種類あり、それぞれ難易度が5段階の、計50個の実績とそれに応じて得られる経験値が設定されている。
+
 \section{ログシステム}
- VSCode APIを用いて、VSCode上での以下の操作を追跡し、それをログファイル（＄HOME/.config/logfile.txt）に記録する。
+ VSCode APIを用いて、VSCode上での以下の操作を追跡し、それをログファイル（＄HOME/.config/codeaile/logfile.txt）に記録する。
+ これらの操作はユーザーが開発を行う中での主要な操作であり、これによりユーザーの開発状況を把握し、実績システムに活用することができる。
 \begin{quote}
   \begin{itemize}
    \item ファイルの新規作成（Create）
@@ -166,7 +210,7 @@ Code Aileは、VSCodeのサイドバーに表示される部屋を舞台に、�
 \end{quote}
 
  また、ログファイルのフォーマットは図~\ref{fig:aileLog}の様になっており、VSCode実行中に定期的（1回/5分程度）に確認し、
-図\ref{fig:statistics}の様に、編集行数やデバッグの実行回数などの統計情報を抽出する（statistics-data.txt）。
+図\ref{fig:statistics}の様に、編集行数やデバッグの実行回数などの統計情報を抽出する（＄HOME/.config/codeaile/statistics-data.txt）。
 
 \begin{figure}[tb]
   \centering
@@ -182,47 +226,6 @@ Code Aileは、VSCodeのサイドバーに表示される部屋を舞台に、�
   \label{fig:statistics}
 \end{figure}
 
-\section{実績システム}
- ログファイルから得た統計情報を取得し、事前に設定している実績の条件を満たしていると、実績が解除される。
-条件は10種類あり、それぞれ難易度が5段階の、計50個の実績とそれに応じて得られる経験値が設定されている。
-
-\section{ユーザーステータス}
- ユーザーステータスはユーザー名、経験値、ランク、解除した実績リストの4要素を持つ。
-ユーザー名はホームディレクトリ名が自動的に設定され、実績を解除することで経験値が増加し、次のランクに上がるための閾値に達するとランクが上昇する。
-実行画面にあるshow status（SS）ボタンをクリックすることで、図\ref{fig:userStatus}の様に、現在のステータスと実績の達成状況を確認できる。
-
-\begin{figure}[tb]
-  \centering
-  \includegraphics[width=10cm]{images/userStatus}
-  \caption{ユーザーステータスの表示}
-  \label{fig:userStatus}
-\end{figure}
-
-\section{Aileの成長と部屋のカスタマイズ}
- Aileの成長段階は7段階あり、ユーザーランクと連動して成長する。
-実行画面にあるevolve aile（EA）ボタンをクリックすることで、Aileが次の成長段階に進化する。
-また、解除した実績数が5つ増えるごとに、部屋のカスタマイズアイテムを取得でき、部屋の背景を変更したり、家具を配置することができる。
-図（初期段階の図）が、初期段階の実行画面であり、図（成長した図）は、ある程度成長した段階の実行画面である。
-
-% \begin{figure*}[t]
-% 	\begin{minipage}[b]{0.48\linewidth}
-% 		\centering
-% 		\includegraphics[height=6cm]{images/initialCodeAile}
-% 		\subcaption{CodeAileの実行画面（初期段階）}
-% 		\label{fig:initialCodeAile}
-% 	\end{minipage}
-% 	\hfill
-% 	\begin{minipage}[b]{0.48\linewidth}
-% 		\centering
-% 		\includegraphics[height=6cm]{images/grownCodeAile}
-% 		\subcaption{CodeAileの実行画面（成長後）}
-% 		\label{fig:grownCodeAile}
-% 	\end{minipage}
-% 	\hfill
-% 	\caption{CodeAileの実行画面}
-% 	\label{fig:codeAile}
-% \end{figure*}
-
 % % 図の例
 % \begin{figure}[tb]
 %   \centering
@@ -237,17 +240,18 @@ Code Aileは、VSCodeのサイドバーに表示される部屋を舞台に、�
 \chapter{評価実験}
 
 \section{実験手順}
- この拡張機能が実際にプログラミング開発の習慣化に貢献するか確かめるために、アンケート調査を行う。
-実験参加者には2週間にわたりCode Aileを使用してもらい、その後アンケートに回答してもらう。
+ この拡張機能が実際にプログラミング開発の習慣化に貢献するか確かめるために、実験参加者を募り、評価実験を行った。
+実験参加者にはCode Aileを2週間に渡り使用させ、その後アンケート調査を行った。
 アンケートの内容は、以下の通りである。
 \begin{quote}
 	\begin{enumerate}
-    \item 現在の経験値総量・ランクを教えてください。
-    \item 総ログイン日数・連続ログイン日数を教えてください。
+    % \item 現在の経験値総量・ランクを教えてください。
+    % \item 総ログイン日数・連続ログイン日数を教えてください。
     \item プログラミング開発を楽しむことができましたか。
     \item 実績を解除すること、Aileを育てることは、プログラミング開発のモチベーションになりましたか。
     \item これからも開発を継続しようと思いましたか。
     \item 開発を継続しようと思った人は、これからもCode Aileを使用しようと思いますか。
+    \item Code Aileを初学者に勧めたいと思いましたか。
     \item この機能の良かった点があれば教えてください。
     \item この機能の悪かった点があれば教えてください。
     \item その他、感想や要望があれば教えてください。
@@ -255,31 +259,95 @@ Code Aileは、VSCodeのサイドバーに表示される部屋を舞台に、�
 \end{quote}
 
 \section{実験結果}
+ 図~\ref{fig:q1}〜図~\ref{fig:q5}より、プログラミング開発を楽しめた人は実験参加者の半数であり、
+同じく半数の人が、Aileの存在がモチベーションに繋がったと回答している。また、開発を継続しようと思った人は過半数を超えており、
+同様に過半数の人がCode Aileを今後も利用したい、Code Aileを初学者に勧めたいと回答している。
+この結果は、初学者の学習支援を目的としたCode Aileにとって、良い結果だと言える。
+ 図~\ref{fig:q6}の回答より、良かった点としてキャラクターの成長と自分の成長を一緒に実感できる、学習の進捗が視覚的に分かる等、
+Code Aileの狙いである、視覚的フィードバックによるモチベーションの向上が、実現できていると考えられる。
+ ただし、図~\ref{fig:q7}、図~\ref{fig:q8}の回答のように、悪かった点も多く挙げられており、
+ボタンを押すことでAileが進化するというシステムの都合上、コードを編集している時にはAileの変化がなくモチベーションが湧かない、
+ランクがいつ・どのように上がったのか分からないといったシステム面、その他ステータス通知が邪魔になる、Aileを手動で進化させなければならない、
+などUI面での意見をいただいた。これらの意見より、ランクアップしたことが分かる通知機能や、Aileが自動で進化する様な仕組み、
+Aileのアイテムや進化条件がわかりやすくなるようなUIの改善が必要だと考えられる。
 
-\section{考察}
+% \begin{table*}[t]
+% 	\caption{経験値総量・ランク・総ログイン日数・連続ログイン日数をまとめた表}
+% 	\label{log}
+% 	\center
+% 	\includegraphics[height=6cm]{images/log}
+% \end{table*}
 
-% 表の例
-% \begin{table}[tb]
-%   \centering
-%   \caption{Addistant 2の実行時間(秒)}
-%   \label{tab:time}
-%   \begin{tabular}{lr}
-%    \hline
-%                    & 時間 \\
-%    \hline
-%    X Window System & 15.0 \\
-%    Addistant 1     &  3.0 \\
-%    Addistant 2     &  2.0 \\
-%    \hline
-%   \end{tabular}
-% \end{table}
-
-% 表~\ref{tab:time}は...
+\begin{figure*}[t]
+  \hfill
+  \begin{minipage}[b]{0.48\linewidth}
+    \centering
+    \includegraphics[width=4cm]{images/q1}
+    \caption{質問1への回答}
+    \label{fig:q1}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.48\linewidth}
+    \centering
+    \includegraphics[width=4cm]{images/q2}
+    \caption{質問2への回答}
+    \label{fig:q2}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.48\linewidth}
+    \centering
+    \includegraphics[width=4cm]{images/q3}
+    \caption{質問3への回答}
+    \label{fig:q3}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.48\linewidth}
+    \centering
+    \includegraphics[width=4cm]{images/q4}
+    \caption{質問4への回答}
+    \label{fig:q4}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.48\linewidth}
+    \centering
+    \includegraphics[width=4cm]{images/q5}
+    \caption{質問5への回答}
+    \label{fig:q5}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.48\linewidth}
+    \centering
+    \includegraphics[width=4cm]{images/q6}
+    \caption{質問6への回答}
+    \label{fig:q6}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.48\linewidth}
+    \centering
+    \includegraphics[width=4cm]{images/q7}
+    \caption{質問7への回答}
+    \label{fig:q7}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.48\linewidth}
+    \centering
+    \includegraphics[width=4cm]{images/q8}
+    \caption{質問8への回答}
+    \label{fig:q8}
+  \end{minipage}
+  \hfill
+  \caption{Code Aileの利用者アンケート結果}
+  \label{fig:results}
+\end{figure*}
 
 %%%%
 \chapter{まとめ}
-
-
+ 初学者がプログラミング開発を習慣化するために、バーチャルペットを育成と実績システムを用いたVSCode拡張機能、Code Aileを提案、実装した。
+Code Aileの効果をアンケートで評価実験を行った結果、バーチャルペットを育成することは、プログラミング開発を継続するモチベーションになることが分かった。
+それと同時に、Code AileのシステムやUIには改善が必要であるという結論になった。この実験結果より、プログラミング開発を習慣化するためには、
+バーチャルペットの育成の様な視覚的フィードバックの他に、次のステップへ進むための目標掲示を行うなど、
+ユーザーのモチベーションを維持する工夫がさらに必要であることが分かった。
+今回、Code Aileの利用によってある程度習慣化を促すことが出来たが、これをより良い機能とするために追加で必要な要素が明らかになった。
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
