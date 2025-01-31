@@ -4,8 +4,9 @@
 - 次原蒼司
 
 ## タイトル
-- プログラミング習慣化のためのバーチャルペットを育成するVSCode拡張機能の開発
-- Code Aile: A VSCode extension for building a pro-gramming habit with raising a virtual pets
+- Code Aile: バーチャルペットを用いたプログラミング習慣化の試み
+- Code Aile: an attempt to develop programming habits using virtual pets.
+
 
 ## 概要
 プログラミング初学者の多くは，プログラミングの好き嫌いに拘わらず，習慣として開発を続けることが難しい．習慣として継続させるためには，継続するための動機が必要である．そこで本稿では継続するための理由付けとして，ペット育成ゲームの要素を取り入れることを考える．ペット育成ゲームを，今日のデファクトスタンダードなエディタ/IDE であるVSCode 上に構築することで，初学者が開発意欲を維持できるような環境を提供する．
